@@ -1,0 +1,19 @@
+<h1>Tell me your favorite color</h1>
+
+<form action="/color/" method="POST">
+<fieldset>
+    Favorite Color: <input type="text" name="favorite">
+    <br/>
+    Your Name: <input type="text" name="name">
+    <br/>
+    <input type="submit">
+    </fieldset>
+</form>
+
+<% @list.each do |row| %>
+<p>
+<%= row %>
+</p>
+<% end %>
+
+
