@@ -40,6 +40,31 @@ set :views, "views"
 # return "Item deleted"
 #end
 
+get '/:first_name/colors/' do
+@note = params[:email]
+@title ="Welcome #{params[:first_name]}"
+erb :colorform
+end
+
+post '/:first_name/colors/' do
+    N0 = params[:N0]||""
+    N2 = params[:N2]||""
+    first_name = params[:first_name] || ""
+    last_name = params[:last_name] || ""
+    email = params[:email] || ""
+    password = params[:password] || ""
+    logine= params[:logine]||""
+    loginp= params[:loginp]||""
+
+db = SQLite3::Database.open "tester.db"  
+db.transaction
+    db.execute "UPDATE colors SET N0='#{N0}' WHERE first_name='Chris'"
+    db.execute "UPDATE colors SET N2='#{N2}' WHERE first_name='Chris'"
+    db.commit
+    db.close
+redirect '/:first_name/colors/'
+end
+
 get '/colors/' do
   db = SQLite3::Database.open "tester.db"
   @list = db.execute "select * from colors"
@@ -47,7 +72,7 @@ get '/colors/' do
 end
 
 post '/colors/' do
-  
+
     N0 = params[:N0]||""
     N2 = params[:N2]||""
     first_name = params[:first_name] || ""
@@ -60,8 +85,9 @@ post '/colors/' do
 
 
 db = SQLite3::Database.open "tester.db"  
-db.execute "INSERT INTO colors (N0, N2) values ('#{N0}', '#{N2}')"
+db.execute "INSERT INTO colors (first_name, last_name, email, password, N0, N2) values ('#{first_name}', '#{last_name}', '#{email}', '#{password}', '#{N0}', '#{N2}')"
 db.close
+redirect '/:first_name/colors/'
 end
 
 get '/copic/' do
@@ -90,29 +116,31 @@ db = SQLite3::Database.open "tester.db"
   return "Name already exists in database"
     #if name does not exist in database
    else
-	db.execute "INSERT INTO colors (first_name, last_name, email, password) values ('#{first_name}', '#{last_name}', '#{email}', '#{password}')"
+  db.execute "INSERT INTO colors (first_name, last_name, email, password) values ('#{first_name}', '#{last_name}', '#{email}', '#{password}')"
 db.close
+redirect '/:first_name/colors/'
 end
 
-get '/login/' do
-    db = SQLite3::Database.open "tester.db"
-    erb :loginform 
-end
+#get '/log/' do
+ #   db = SQLite3::Database.open "tester.db"
+  #  erb :loginform 
+#end
 
-post '/login/' do
+#post '/log/' do
 
-    logine= params[:logine]||""
-    loginp= params[:loginp]||""
+#    logine= params[:logine]||""
+ #   loginp= params[:loginp]||""
 
-    db = SQLite3::Database.open "tester.db" 
+  #  db = SQLite3::Database.open "tester.db" 
 
- val1= db.get_first_value "select email from colors where email = '#{logine}'"
- val1= db.get_first_value "select password from colors where password = '#{loginp}'"
-if val1
-  return '/colors/'
-else
-  return "Incorrect Email/Password"
-db.close
-end
+ #val1= db.get_first_value "select email from colors where email = '#{logine}'"
+ #val1= db.get_first_value "select password from colors where password = '#{loginp}'"
+#if val1
+ # return '/colors/'
+#else
+ # return "Incorrect Email/Password"
+#db.close
+#end
+#end
 end
 end
