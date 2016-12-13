@@ -7,7 +7,7 @@ set :port, 8080
 set :static, true
 set :public_folder, "static"
 set :views, "views"
-
+enable :sessions
 #get '/' do
  #   return 'Hello world'
 #end
@@ -40,10 +40,15 @@ set :views, "views"
 # return "Item deleted"
 #end
 
+get '/colors/' do
+ "first_name = " << session[:first_name].inspect
+end
+
 get '/:first_name/colors/' do
-@note = params[:email]
-@title ="Welcome #{params[:first_name]}"
-erb :colorform
+  db = SQLite3::Database.open "tester.db"
+  session['first_name'] = params['first_name']
+  @list = db.execute "select * from colors"
+  erb :colorform
 end
 
 post '/:first_name/colors/' do
@@ -58,8 +63,8 @@ post '/:first_name/colors/' do
 
 db = SQLite3::Database.open "tester.db"  
 db.transaction
-    db.execute "UPDATE colors SET N0='#{N0}' WHERE first_name='Chris'"
-    db.execute "UPDATE colors SET N2='#{N2}' WHERE first_name='Chris'"
+    db.execute "UPDATE colors SET N0='#{N0}' WHERE first_name='#{first_name}'"
+    db.execute "UPDATE colors SET N2='#{N2}' WHERE first_name='#{first_name}'"
     db.commit
     db.close
 redirect '/:first_name/colors/'
@@ -110,16 +115,15 @@ db = SQLite3::Database.open "tester.db"
 
 #where clause for sign up
     #reads through user names
-    val= db.get_first_value "select email from colors where email = '#{email}'"
+  #  val= db.get_first_value "select email from colors where email = '#{email}'"
     #if name user exists in database
- if val
-  return "Name already exists in database"
+ #if val
+  #return "Name already exists in database"
     #if name does not exist in database
-   else
+   #else
   db.execute "INSERT INTO colors (first_name, last_name, email, password) values ('#{first_name}', '#{last_name}', '#{email}', '#{password}')"
 db.close
-redirect '/:first_name/colors/'
-end
+
 
 #get '/log/' do
  #   db = SQLite3::Database.open "tester.db"
@@ -142,5 +146,4 @@ end
 #db.close
 #end
 #end
-end
 end
